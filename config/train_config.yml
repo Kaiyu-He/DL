@@ -1,0 +1,48 @@
+
+model_path: "/netcache/huggingface/Qwen2.5-7B-Instruct"
+tokenizer_path: "/netcache/huggingface/Qwen2.5-7B-Instruct"
+attn_implementation: "flash_attention_2"
+load_in_4bit: false
+
+output_dir: "/mnt/publiccache/hekaiyu/result/test"
+prompt_path: "/netcache/hekaiyu/project/data/detect_ai.json"
+
+bf16: True
+learning_rate: 0.0002
+weight_decay : 0.01
+adam_beta2: 0.95
+lr_scheduler_type: "cosine"
+warmup_ratio: 0
+
+num_train_epochs: 1
+per_device_train_batch_size: 1
+train_batch_size: 16
+max_length: 512
+
+save_steps: 100
+logging_steps: 1
+save_dir: ./save
+
+
+lora_config:
+    r: 16
+    lora_alpha: 32
+    lora_dropout: 0.05
+    bias: 'none'
+    target_modules: [ "q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj" ]
+
+resume_from_checkpoint: false
+report_to: ["wandb"]
+
+ddp: true
+device_map: null
+deepspeed: false
+#deepspeed_config_path : "config/"
+
+WANDB_PROJECT: "train"
+WANDB_API_KEY: "666bff72d04cfb09fb241f5152a186617627651b"
+
+data:
+    - "CLTS: 13500"
+    - "deepseek: 3150"
+

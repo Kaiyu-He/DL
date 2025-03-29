@@ -1,0 +1,2 @@
+model_path: "/netcache/huggingface/Qwen2.5-7B-Instruct"
+tokenizer_path: "/netcache/huggingface/Qwen2.5-7B-Instruct"

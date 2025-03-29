@@ -1,0 +1,6 @@
+model_path: "/netcache/huggingface/Qwen2.5-7B-Instruct"
+tokenizer_path: "/netcache/huggingface/Qwen2.5-7B-Instruct"
+lora_path: "/netcache/hekaiyu/project/save/checkpoint-300"
+data:
+  - "deepseek: 3000"
+  - "CLTS: 3000"

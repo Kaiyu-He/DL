@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文本识别应用</title>
+</head>
+
+<body>
+    <h1>文本识别应用</h1>
+    <form method="post">
+        <label for="input_text">请输入文本:</label><br>
+        <textarea id="input_text" name="input_text" rows="4" cols="50">{{ input_text }}</textarea><br>
+        <input type="submit" value="提交">
+    </form>
+    <h2>摘要信息</h2>
+    <p>{{ summary }}</p>
+    <h2>文本识别结果</h2>
+    <p>{{ result }}</p>
+</body>
+
+</html>
