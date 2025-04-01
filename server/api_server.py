@@ -1,6 +1,7 @@
 import socket
 import math
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "7,8"
 import sys
 from pathlib import Path
 from flask import Flask, request, jsonify
@@ -91,7 +92,7 @@ class ModelArgs(BaseArgs):
 
 
 if __name__ == '__main__':
-    # os.environ["CUDA_VISIBLE_DEVICES"] = "7,8"
+
     args = ModelArgs().parse_args()
     model, tokenizer = Init(args)
     app.run(host=get_local_ip(), port=14425, threaded=True)

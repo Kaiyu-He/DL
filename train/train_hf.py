@@ -128,10 +128,11 @@ if __name__ == "__main__":
         args.device_map = {"": Accelerator().process_index}
     else:
         args.device_map = 'auto'
-    dataset = get_data_detect_ai(args.data, args.prompt_path)
+    dataset = get_data_detect_ai(args.data, prompt_path=args.prompt_path)
+    dataset.shuffle()
     model, tokenizer = load_model(args)
 
-    train_dataset = Dataset(generate_data(dataset, tokenizer, args.max_length))
+    train_dataset = Dataset(generate_data(dataset, tokenizer, args.max_length), shuffle=True)
     if "wandb" in args.report_to:
         os.environ["WANDB_PROJECT"] = args.WANDB_PROJECT
         os.environ["WANDB_API_KEY"] = args.WANDB_API_KEY

@@ -17,7 +17,7 @@ warmup_ratio: 0
 num_train_epochs: 1
 per_device_train_batch_size: 1
 train_batch_size: 16
-max_length: 512
+max_length: 572
 
 save_steps: 100
 logging_steps: 1
@@ -43,6 +43,7 @@ WANDB_PROJECT: "train"
 WANDB_API_KEY: "666bff72d04cfb09fb241f5152a186617627651b"
 
 data:
-    - "CLTS: 13500"
-    - "deepseek: 3150"
+    - "CLTS: 1500"
+    - "deepseek: 1500"
+    - "essay"
 
