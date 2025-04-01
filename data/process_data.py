@@ -61,6 +61,32 @@ class deepseek_news_dataset(torch.utils.data.Dataset):
         }
 
 
+class essay_dataset(torch.utils.data.Dataset):
+    def __init__(self, data_path="./data/essay/train"):
+        if not os.path.exists(data_path):
+            raise f"{data_path} 数据集文件不存在"
+        self.data_path = data_path
+        self.data = {
+            "input": [],
+            "output": []
+        }
+        path = next(Path(data_path).glob("*.jsonl"))
+        with open(path, "r") as f:
+            for line in f:
+                line = json.loads(line)
+                self.data['input'].append(line['text'])
+                self.data['output'].append(line['label'])
+
+    def __len__(self):
+        return len(self.data["input"])
+
+    def __getitem__(self, idx):
+        return {
+            "input": self.data['input'][idx],
+            "output": self.data['output'][idx],
+        }
+
+
 class TotalDataset(torch.utils.data.Dataset):
     def __init__(self, prompt_path):
         self.data = {
@@ -68,9 +94,15 @@ class TotalDataset(torch.utils.data.Dataset):
             "output": []
         }
         try:
-            with open(prompt_path, "r") as f:
-                self.prompt = json.load(f)['prompt']
-        except:
+            if prompt_path[-4:] == ".json":
+                with open(prompt_path, "r") as f:
+                    self.prompt = json.load(f)['prompt']
+            else:
+                self.prompt = [prompt_path]
+                if not self.prompt[0].find("<|content|>") >= 0:
+                    raise
+        except Exception as e:
+            print(f"使用base prmopt: {e}")
             self.prompt = ["<|content|>"]
         self.indices = []
 
@@ -90,8 +122,21 @@ class TotalDataset(torch.utils.data.Dataset):
         self.data['input'].append(d['input'])
         self.data['output'].append(d['output'])
         self.indices.append(len(self.data["input"]))
+
     def shuffle(self):
         random.shuffle(self.indices)
+
+
+def cut_ch_text(text: str, max_str_lens: int = -1):
+    sentences = text.split('。')
+    cut_txt = ""
+    for sentence in sentences:
+        if len(cut_txt + sentence + '。') <= max_str_lens or max_str_lens == -1:
+            cut_txt = cut_txt + sentence + '。'
+        else:
+            break
+    return cut_txt
+
 
 def get_data(args):
     dataset = TotalDataset("./prompt.json")
@@ -113,7 +158,7 @@ def get_data(args):
     return dataset
 
 
-def get_data_detect_ai(args, prompt_path="./detect_ai.json"):
+def get_data_detect_ai(args, prompt_path="./detect_ai.json", max_str_lens=400):
     dataset = TotalDataset(prompt_path)
     for i in args:
         try:
@@ -129,6 +174,7 @@ def get_data_detect_ai(args, prompt_path="./detect_ai.json"):
                 if num == total:
                     break
                 num += 1
+                d['input'] = cut_ch_text(d['input'], max_str_lens)
                 d['output'] = '否'
                 dataset.add(d)
         elif name.find("deepseek") >= 0:
@@ -138,9 +184,22 @@ def get_data_detect_ai(args, prompt_path="./detect_ai.json"):
                 if num == total:
                     break
                 num += 1
+                d['input'] = cut_ch_text(d['input'], max_str_lens)
                 d['output'] = '是'
                 dataset.add(d)
+        elif name.find("essay") >= 0:
+            sub_dataset = essay_dataset()
+            num = 0
+            for d in sub_dataset:
+                if num == total:
+                    break
+                num += 1
+                d['input'] = cut_ch_text(d['input'], max_str_lens)
+                d['output'] = '是' if d['output'] else '否'
+                dataset.add(d)
     return dataset
+
+
 def get_eval_data_detect_ai(args, prompt_path="./detect_ai.json"):
     dataset = TotalDataset(prompt_path)
     for i in args:
@@ -151,7 +210,7 @@ def get_eval_data_detect_ai(args, prompt_path="./detect_ai.json"):
             name = i
             total = -1
         if name.find("CLTS") >= 0:
-            sub_dataset = CLTSDataset("./data/CLTS/test")
+            sub_dataset = CLTSDataset("/netcache/hekaiyu/project/data/CLTS/test")
             num = 0
             for d in sub_dataset:
                 if num == total:
@@ -160,7 +219,7 @@ def get_eval_data_detect_ai(args, prompt_path="./detect_ai.json"):
                 d['output'] = '否'
                 dataset.add(d)
         elif name.find("deepseek") >= 0:
-            sub_dataset = deepseek_news_dataset("./data/AI_content/deepseek/test")
+            sub_dataset = deepseek_news_dataset("./netcache/hekaiyu/project/data/AI_content/deepseek/test")
             num = 0
             for d in sub_dataset:
                 if num == total:
