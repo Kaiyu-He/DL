@@ -145,10 +145,6 @@ def _write(prompt: str, score, prompts, save_dir):
 def updata_prompt(save_dir, original_path):
     with open(original_path, "r") as f:
         prompts = json.load(f)
-    # orig = prompts['prompt'][0]
-    # prompts = {
-    #     "prompt": [(orig, metric(orig))]
-    # }
     times = 0
     while times <= 1000:
         times += 1
