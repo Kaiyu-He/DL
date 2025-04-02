@@ -1,6 +1,7 @@
 import socket
 import math
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "7,8"
 import sys
 from pathlib import Path
 from flask import Flask, request, jsonify
@@ -84,14 +85,14 @@ def get_local_ip():
 
 
 class ModelArgs(BaseArgs):
-    config_path: str = "/netcache/hekaiyu/project/config/qwen2.5-lora.yml"
+    config_path: str = "config/qwen2.5-lora.yml"
 
     def __init__(self):
         super().__init__()
 
 
 if __name__ == '__main__':
-    # os.environ["CUDA_VISIBLE_DEVICES"] = "7,8"
+
     args = ModelArgs().parse_args()
     model, tokenizer = Init(args)
     app.run(host=get_local_ip(), port=14425, threaded=True)

@@ -16,13 +16,13 @@ from transformers import AutoTokenizer, TrainingArguments, AutoModelForCausalLM,
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 
 sys.path.append(str(Path(__file__).parent.parent))
-from data.process_data import get_data_detect_ai
+from data.process_data import get_data_detect_ai, get_data
 from eval.init import BaseArgs
 
 
 class TrainArgs(BaseArgs):
     learning_rate: float = 2e-4
-    config_path: str = "config/train_config.yml"
+    config_path: str = "config/summary2.yml"
 
     def __init__(self):
         super().__init__()
@@ -64,6 +64,7 @@ def load_model(args):
 
 import torch
 import numpy as np
+
 
 class Dataset(torch.utils.data.Dataset):
     def __init__(self, data, shuffle=True):
@@ -124,19 +125,24 @@ def generate_data(
 if __name__ == "__main__":
     args = TrainArgs()
     args.parse_args()
+    print("???", args.model_path)
+    print("???", args.config_path)
+    print("???", args.save_dir)
     if args.ddp:
         args.device_map = {"": Accelerator().process_index}
     else:
         args.device_map = 'auto'
-    dataset = get_data_detect_ai(args.data, args.prompt_path)
+    # dataset = get_data_detect_ai(args.data, prompt_path=args.prompt_path)
+    dataset = get_data(args.data, prompt_path=args.prompt_path,)
     model, tokenizer = load_model(args)
 
-    train_dataset = Dataset(generate_data(dataset, tokenizer, args.max_length))
+    train_dataset = Dataset(generate_data(dataset, tokenizer, args.max_length), shuffle=False)
     if "wandb" in args.report_to:
         os.environ["WANDB_PROJECT"] = args.WANDB_PROJECT
         os.environ["WANDB_API_KEY"] = args.WANDB_API_KEY
     accelerator = Accelerator()
-    gradient_accumulation_steps = int(args.train_batch_size/args.per_device_train_batch_size/torch.cuda.device_count())
+    gradient_accumulation_steps = int(
+        args.train_batch_size / args.per_device_train_batch_size / torch.cuda.device_count())
     print(gradient_accumulation_steps)
     training_args = TrainingArguments(
         bf16=args.bf16,

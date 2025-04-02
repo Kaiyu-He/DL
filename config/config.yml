@@ -1,2 +1,3 @@
 model_path: "/netcache/huggingface/Qwen2.5-7B-Instruct"
 tokenizer_path: "/netcache/huggingface/Qwen2.5-7B-Instruct"
+lora_path: "/netcache/hekaiyu/project/save/summary/qwen"
