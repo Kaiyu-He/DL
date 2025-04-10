@@ -13,7 +13,7 @@ os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def deepseek_query(query):
     from openai import OpenAI
-    client = OpenAI(api_key="sk-df3548002777404da2b96456cb349046", base_url="https://api.deepseek.com")
+    client = OpenAI(api_key="api-key", base_url="https://api.deepseek.com")
     message = [
         {
             "role": "user",
@@ -34,7 +34,7 @@ def deepseek_query(query):
 # def doubao_query(query):
 #     from volcenginesdkarkruntime import Ark
 #     client = Ark(base_url="https://ark.cn-beijing.volces.com/api/v3",
-#                  api_key="134fb6cc-db6a-4d49-83ea-7129191c1f1b")
+#                  api_key="")
 #     completion = client.chat.completions.create(
 #         model="ep-20250203192027-bt2bp",
 #         messages=[
